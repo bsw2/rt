@@ -84,12 +84,13 @@ $CloseRowDiv    => 1
 </%ARGS>
 
 <%METHOD InputOnly>
-<textarea name="<% $Name %>" class="form-control" cols="<% $Cols %>" rows="<% $Rows %>"><% $CurrentValue %></textarea>
+<textarea placeholder="<% $Placeholder %>" name="<% $Name %>" class="form-control" cols="<% $Cols %>" rows="<% $Rows %>"><% $CurrentValue %></textarea>
 <%ARGS>
 $Name
 $Cols => 80
 $Rows => 6
 $CurrentValue => '',
+$Placeholder => loc('String')
 </%ARGS>
 </%METHOD>
 

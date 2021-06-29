@@ -48,9 +48,9 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<& /Widgets/Form/MultilineString, Class => 'json', %ARGS &>
+<& /Widgets/Form/MultilineString, Class => 'json', Placeholder => loc('JSON'), %ARGS &>
 <%METHOD InputOnly>
-<& /Widgets/Form/MultilineString:InputOnly, %ARGS &>
+<& /Widgets/Form/MultilineString:InputOnly, Placeholder => loc('JSON'), %ARGS &>
 </%METHOD>
 <%METHOD Process>
 <& /Widgets/Form/MultilineString:Process, %ARGS &>
