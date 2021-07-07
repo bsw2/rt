@@ -56,6 +56,7 @@ use File::Spec;
 my @orig_argv = @ARGV;
 # Save our path because installers or tests can change cwd
 my $script_path = abs_path($0);
+my $output_type;
 
 my %args;
 GetOptions(
@@ -73,6 +74,7 @@ GetOptions(
 
     'with-S3', 'with-DROPBOX',
 
+    'output=s' => \$output_type,
     'siteinstall!',
     'help|h',
 
@@ -113,6 +115,17 @@ $args{'with-EXTERNALAUTH-TESTS'}
     = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
 
 my %deps = read_deps();
+
+if ($output_type eq 'json') {
+    json_deps();
+    exit 0;
+}
+
+if ($output_type eq 'yaml') {
+    yaml_deps();
+    exit 0;
+}
+
 check_perl_version();
 
 check_users_groups();
@@ -241,6 +254,44 @@ sub read_deps {
     die "Failed to load cpanfile: @{[$@ || $!]}" if not defined $ret and ($@ or $!);
 
     return %deps;
+}
+
+sub yaml_deps {
+    for my $type_key ( sort keys %deps ) {
+        for my $module_key (sort keys %{$deps{$type_key}}) {
+            if ( $module_key ne "perl" ) {
+                my $spec   = $deps{$type_key}{$module_key};
+                printf '-  name: "'.$module_key.'"';
+                if ( $spec ) {
+                    printf "\n".'   version: "'.$spec.'"';
+                }
+                printf "\n";
+                }
+            }
+        }
+}
+
+sub json_deps {
+    my $first_module=1;
+    printf "[\n";
+    for my $type_key ( sort keys %deps ) {
+        for my $module_key (sort keys %{$deps{$type_key}}) {
+            if ( $module_key ne "perl" ) {
+                my $spec   = $deps{$type_key}{$module_key};
+                if ( ! $first_module ) {
+                    printf ",\n";
+                    }
+                printf "    {\n";
+                printf '        "name": "'.$module_key.'"';
+                if ( $spec ) {
+                    printf ",\n".'        "version": "'.$spec.'"';
+                    }
+                printf "\n    }";
+                $first_module=0;
+                }
+            }
+        }
+    printf "\n]\n";
 }
 
 sub test_deps {
